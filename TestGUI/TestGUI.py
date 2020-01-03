@@ -135,7 +135,8 @@ class testGUI:
 		root = Tk()
 		root.title("Test GUI")
 		root.iconbitmap(
-			"C:/Users/Noah Caldwell/Documents/SourceCode/TestGUI/used files/checkbox.ico")
+			"C:/Users/Noah Caldwell/Documents/SourceCode/TestGUI/used "
+			"files/checkbox.ico")
 		# Display the user's test script as the main title/header of the window
 		global title_font
 		path = main.__file__ # will show the actual test file thats using this module
