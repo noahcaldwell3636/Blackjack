@@ -121,7 +121,7 @@ class testGUI:
 
 	"""Creates a Tkinter PhotoImage with dimensions specified in the parameters using a image's
 	file path. Can cause distorted images if the dimesions are not proportional to the orginal 
-	photo's dimesions."""
+	photo's dimesions. Accepts .png files."""
 	def sized_image(self, img_path, w, h):
 		img = Image.open(img_path)  # PIL solution
 		img = img.resize((w, h), Image.ANTIALIAS) # (height, width)
