@@ -37,12 +37,14 @@ class Player:
 	"""Player will finish the round with his current hand"""
 	def stand(self):
 		self.status = "stand"
+		print("")
 		print("Player stands")
 
 	"""Player requests another card from dealer."""
 	def hit(self):
 		card = self.dealer.deck.pop(0)
 		self.hand.append(card)
+		print("")
 		print(f"The player hit and got {card}")
 		self.update_total()
 
@@ -56,10 +58,13 @@ class Player:
 		self.total = 0
 		for card in self.hand:
 			self.total += card.worth
-		print(f"Player's total = {self.total}")
+		print("")
+		print(f"Your total = {self.total}")
 		if self.total == 21:
 			self.status = "21"
+			print("")
 			print("You got 21!")
 		elif self.total > 21:
 			self.status = "busted"
-			print(f"The player busted with a hand of {self.total}")
+			print("")
+			print(f"The you busted with a hand of {self.total}")
