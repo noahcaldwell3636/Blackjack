@@ -5,16 +5,23 @@ from player import Player
 
 class CardGame:
 	def __init__(self):
-		pass
+		self.dealer = None
+		self.player = None
 
 	def print_welcome_art(self):
 		print("")
 		print("")
-		print("=============================================================")
-		print("=============================================================")
-		print("~~~~~~~~~~~~~Welcome to a new round of Blackjack~~~~~~~~~~~~~")
-		print("=============================================================")
-		print("=============================================================")
+		print("=======================================================")
+		print("=======================================================")
+		print("~~~~~~~~~~Welcome to a new round of Blackjack~~~~~~~~~~")
+		print("=======================================================")
+		print("=======================================================")
+
+	def assign_dealer(self, dealer):
+		self.dealer = dealer
+
+	def assign_player(self, player):
+		self.player = player
 
 
 # Set up match

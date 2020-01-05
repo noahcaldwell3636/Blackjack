@@ -9,8 +9,8 @@ class Player:
 		self.hand = [] #hand of card objects
 		self.total = 0
 		self.current_bet = 0
-		self.dealer = dealer
 		self.status = "playing"
+		self.dealer = dealer
 
 	"""String representation of object"""
 	def __repr__(self):
