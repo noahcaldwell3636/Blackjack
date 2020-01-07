@@ -63,34 +63,34 @@ class BlackJackGUI:
 		five_hun_btn = tk.Button(self.root, text="500", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(500))
-		five_hun_btn.place(x=0, y=0)
+		five_hun_btn.place(x=100, y=300)
 
 		one_hun_btn = tk.Button(self.root, text="100", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(100))
-		one_hun_btn.place(x=0, y=100)
+		one_hun_btn.place(x=230, y=300)
 
 		fifty_btn = tk.Button(self.root, text="50", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(50))
-		fifty_btn.place(x=0, y=200)
+		fifty_btn.place(x=360, y=300)
 
 		twenty_five_btn = tk.Button(self.root, text="25", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(25))
-		twenty_five_btn.place(x=0, y=300)
+		twenty_five_btn.place(x=490, y=300)
 
 		self.bankroll_display = tk.Label(self.root, 
 			text=f"bankroll = {self.player.bankroll}")
+		self.bankroll_display['bg'] = self.bankroll_display.master['bg']
 		self.bankroll_display.place(x=50, y=50)
 		self.update_bankroll()
 
+	"""Updates Bankroll display label"""
 	def update_bankroll(self):
 		if type(self.bankroll_display) != type(None):
 			self.bankroll_display.config(text=f"bankroll = {self.player.bankroll}")
 			self.root.after(300, self.update_bankroll)
-			print(self.player.bankroll)
-
 
 	"""Creates a Tkinter PhotoImage with dimensions specified in the 
 	parameters using a image's file path. Can cause distorted images if 
