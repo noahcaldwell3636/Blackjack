@@ -60,36 +60,46 @@ class BlackJackGUI:
 		background_label.place(x=0, y=0)
 
 		# Player buys bankroll
+		# Instruction text
+		instr_text = tk.Label(self.root, 
+			text=f"How much do you want\n  to play with?", 
+			font=("arial", "40"), bg="black", fg="white")
+		instr_text.place(x=75, y=80)
+
+		#  buy five hundred 
 		five_hun_btn = tk.Button(self.root, text="500", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(500))
 		five_hun_btn.place(x=100, y=300)
-
+		# buy one hundred 
 		one_hun_btn = tk.Button(self.root, text="100", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(100))
 		one_hun_btn.place(x=230, y=300)
-
+		# buy fifty
 		fifty_btn = tk.Button(self.root, text="50", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(50))
 		fifty_btn.place(x=360, y=300)
-
+		# buy twenty five
 		twenty_five_btn = tk.Button(self.root, text="25", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.player.buy_chips(25))
 		twenty_five_btn.place(x=490, y=300)
-
+		# display total bankroll as you buy chips
 		self.bankroll_display = tk.Label(self.root, 
-			text=f"bankroll = {self.player.bankroll}")
-		self.bankroll_display['bg'] = self.bankroll_display.master['bg']
-		self.bankroll_display.place(x=50, y=50)
+			text=f"bankroll = {self.player.bankroll}", 
+			font=("arial", "40"), bg="black", fg="white")
+		self.bankroll_display.place(x=265, y=430)
 		self.update_bankroll()
+
+
+
 
 	"""Updates Bankroll display label"""
 	def update_bankroll(self):
 		if type(self.bankroll_display) != type(None):
-			self.bankroll_display.config(text=f"bankroll = {self.player.bankroll}")
+			self.bankroll_display.config(text=f"bankroll\n{self.player.bankroll}")
 			self.root.after(300, self.update_bankroll)
 
 	"""Creates a Tkinter PhotoImage with dimensions specified in the 
