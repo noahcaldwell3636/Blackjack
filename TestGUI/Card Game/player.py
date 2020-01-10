@@ -22,7 +22,8 @@ class Player:
 	"""Place bet on table for blackjack.
 	@param amount - amount the player is betting"""
 	def place_bet(self, amount):
-		self.current_bet = amount
+		self.current_bet += amount
+		self.bankroll -= amount
 
 	"""Returns the cards the player currently posses."""
 	def get_hand(self):
