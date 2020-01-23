@@ -1,4 +1,4 @@
-from card import Card
+from BJcard import Card
 from random import shuffle
 
 """ 
