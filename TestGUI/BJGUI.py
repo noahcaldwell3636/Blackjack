@@ -4,6 +4,7 @@ import BJplayer
 import BJdealer
 
 class BlackJackGUI:
+	
 	def __init__(self):
 		# core attributes
 		self.WINDOW_WIDTH = 720
@@ -18,8 +19,7 @@ class BlackJackGUI:
 		self.please_add_lable = None
 		self.insufficient_funds = None
 		self.fullscreen_btn = None
-
-
+		# other
 		self.is_fullscreen = True
 
 
@@ -56,10 +56,8 @@ class BlackJackGUI:
 		self.fullscreen_btn = tk.Button(root, text="Fullscreen", 
 			bg="black", fg="#EA1616", command=self.toggle_fullscreen)
 		self.fullscreen_btn.place(x=5, y=5)
-
 		# key bindings
 		self.root.bind("q", self.display_mouse_coordinates)
-
 		# End of the TK loop
 		root.mainloop()
 
@@ -70,49 +68,44 @@ class BlackJackGUI:
 		widgets = self.root.winfo_children()
 		for w in widgets:
 			w.destroy()
-
 		# add game screen
 		background_image = self.sized_image("C:/Users/Noah Caldwell/"
 			"Documents/SourceCode/TestGUI - Blackjack/TestGUI/"
 			"used files/greenfelt.png", 720, 600)
-		background_label = tk.Label(self.root, image=background_image)
-		background_label.photo = background_image
-		background_label.place(x=0, y=0)
-
+		self.background_label = tk.Label(self.root, image=background_image)
+		self.background_label.photo = background_image
+		self.background_label.place(x=0, y=0)
 		# Player buys bankroll
 		# Instruction text
 		self.instr_text = tk.Label(self.root, 
 			text=f"How much do you want\n  to play with?", 
 			font=("arial", "40"), bg="black", fg="white")
 		self.instr_text.place(x=75, y=80)
-
-		#  buy five hundred 
+		#  buy five hundred button
 		self.five_hun_btn = tk.Button(self.root, text="500", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.buy_chips(500))
 		self.five_hun_btn.place(x=100, y=300)
-		# buy one hundred 
+		# buy one hundred button
 		self.one_hun_btn = tk.Button(self.root, text="100", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.buy_chips(100))
 		self.one_hun_btn.place(x=230, y=300)
-		# buy fifty
+		# buy fifty button
 		self.fifty_btn = tk.Button(self.root, text="50", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.buy_chips(50))
 		self.fifty_btn.place(x=360, y=300)
-		# buy twenty five
+		# buy twenty five button
 		self.twenty_five_btn = tk.Button(self.root, text="25", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.buy_chips(25))
 		self.twenty_five_btn.place(x=490, y=300)
-
 		# display total bankroll as you buy chips
 		self.bankroll_display = tk.Label(self.root, 
 			text=f"bankroll\n{self.player.bankroll}", 
 			font=("arial", "40"), bg="black", fg="white")
 		self.bankroll_display.place(x=265, y=430)
-
 		# place 'ready to play' button
 		self.ready_btn = tk.Button(self.root, text="READY!", bg="white", 
 			fg="black", font=("arial", "20", "bold"), 
@@ -135,22 +128,18 @@ class BlackJackGUI:
 				text=f"current bet\n{self.player.current_bet}")
 
 
-
 	"""Clear the unneeded widgets and move the bankroll display to 
 	prepare for the game"""
 	def start_game(self):
 		if self.player.bankroll > 0:
+			print("started_game")
 			# remove widgets
-			self.instr_text.destroy()
-			self.five_hun_btn.destroy()
-			self.one_hun_btn.destroy()
-			self.fifty_btn.destroy()
-			self.twenty_five_btn.destroy()
-			self.ready_btn.destroy()
+			self.destroy_all_except(self.please_add_lable,
+				self.background_label, self.bankroll_display)
 			if self.please_add_lable is not None:
 				self.please_add_lable.destroy()
 			# move bankroll display to left corner
-			self.move_display()
+			self.move_bankroll_display()
 			self.choose_bet()
 		else:
 			self.please_add_lable = tk.Label(self.root, 
@@ -159,17 +148,21 @@ class BlackJackGUI:
 			self.please_add_lable.place(x=500, y=480)
 			self.warning_displayed = True
 
+
 	def toggle_fullscreen(self):
 		if self.is_fullscreen:
 			self.enter_fullscreen()
 		else:
 			self.exit_fullscreen()
 
+
 	def enter_fullscreen(self):
 		pass
 
+
 	def exit_fullscreen(self):
 		pass
+
 
 	"""Player picks bet amount"""
 	def choose_bet(self):
@@ -178,33 +171,49 @@ class BlackJackGUI:
 			text=f"How much do you want\n  to bet?", 
 			font=("arial", "40"), bg="black", fg="white")
 		self.instr_text.place(x=75, y=80)
-
-		# bet one hundred 
+		# bet one hundred button
 		self.one_hun_btn = tk.Button(self.root, text="100", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.place_bet(100))
 		self.one_hun_btn.place(x=169, y=250)
-		# bet fifty
+		# bet fifty button
 		self.fifty_btn = tk.Button(self.root, text="50", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.place_bet(50))
 		self.fifty_btn.place(x=294, y=330)
-		# bet twenty five
+		# bet twenty five button
 		self.twenty_five_btn = tk.Button(self.root, text="25", width=5, 
 			bg="black", fg="white", font=("arial", "30"), 
 			command=lambda: self.place_bet(25))
 		self.twenty_five_btn.place(x=419, y=410)
-
 		# current bet display
 		self.current_bet_display = tk.Label(self.root, 
 			text=f"current bet\n{self.player.current_bet}", 
 			font=("arial", "15"), bg="black", fg="white")
 		self.current_bet_display.place(x=24, y=442)
+		# ready to deal round button
+		self.deal_round_btn = tk.Button(self.root, text="Deal!", fg='black',
+			bg='white', font=("arial", "29", "bold"), 
+			command=self.deal_round)
+		self.deal_round_btn.place(x=585, y=515)
+
+
+	def deal_round(self):
+		self.destroy_all_except(self.background_label, 
+			self.current_bet_display, self.bankroll_display)
+
+	"""Destorys all the widget on the screen except for the widgets listed
+	in the parameters"""
+	def destroy_all_except(self, *args):
+		widgets = self.root.winfo_children()
+		for w in widgets:
+			if w not in args:
+				w.destroy()		
 
 
 	"""Move the bankroll_display label to the left corner while making
 	it smaller incrementally of the course of a second or so."""
-	def move_display(self):
+	def move_bankroll_display(self):
 		# The 40 comes from the font size I declared when I first
 		# instantiated the bankroll_display label.
 		font_size = 40
@@ -224,9 +233,11 @@ class BlackJackGUI:
 				self.bankroll_display.config(font=("arial", 
 					str(font_size)))
 
+
 	def buy_chips(self, amount):
 		self.player.buy_chips(amount)
 		self.update_bankroll()
+
 
 	def place_bet(self, amount):
 		if amount <= self.player.bankroll:
@@ -241,15 +252,12 @@ class BlackJackGUI:
 			self.insufficient_funds.place(x=140, y=540)
 				
 
-
-	
 	"""Print cursor coordinate to consol. Just a developer tool I can
 	use instead of guessing coordinate when moving buttons and whatnot
 	around."""
 	def display_mouse_coordinates(self, event):
 		x, y = event.x, event.y
 		print('{}, {}'.format(x, y))
-
 
 
 	"""Creates a Tkinter PhotoImage with dimensions specified in the 
