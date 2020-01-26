@@ -1,5 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk,Image
+import os
+from io import BytesIO
 import BJplayer 
 import BJdealer
 
@@ -12,15 +14,13 @@ class BlackJackGUI:
 		self.root = None
 		self.dealer = BJdealer.Dealer()
 		self.player = BJplayer.Player(self.dealer)
+		self.dealer.add_player(self.player)
 		# button attributes that are referenced multiple times across 
 		# different methods (is that bad practice?)
 		self.bankroll_display = None
 		self.current_bet_display = None
 		self.please_add_lable = None
 		self.insufficient_funds = None
-		self.fullscreen_btn = None
-		# other
-		self.is_fullscreen = True
 
 
 	"""Main GUI method"""
@@ -28,15 +28,13 @@ class BlackJackGUI:
 		# window setup
 		root = tk.Tk()
 		root.title("BlackJack!")
-		root.iconbitmap("C:/Users/Noah Caldwell/Documents/SourceCode"
-			"/TestGUI - Blackjack/TestGUI/used files/icon.ico")
+		root.iconbitmap("used files/icon.ico")
 		WINDOW_WIDTH = root.geometry(str(self.WINDOW_WIDTH)+ "x" + 
 			str(self.WINDOW_HEIGHT))
 		self.root = root
 		# Create start screen
 		root.configure(background='black')
-		title_letters = self.sized_image("C:/Users/Noah Caldwell"
-			"/Documents/SourceCode/TestGUI - Blackjack/TestGUI/"
+		title_letters = self.sized_image(
 			"used files/generatedtext.png", 
 			600, 
 			100)
@@ -52,12 +50,10 @@ class BlackJackGUI:
 		play_btn_x = (self.WINDOW_WIDTH/2) - 115
 		play_btn_y = (self.WINDOW_HEIGHT/2) - (15/2)
 		play_btn.place(x=play_btn_x, y=play_btn_y)
-		# Options menu dropdown
-		self.fullscreen_btn = tk.Button(root, text="Fullscreen", 
-			bg="black", fg="#EA1616", command=self.toggle_fullscreen)
-		self.fullscreen_btn.place(x=5, y=5)
 		# key bindings
 		self.root.bind("q", self.display_mouse_coordinates)
+		# Assign images to cards 
+		self.assign_img_to_cards(self.dealer.deck)
 		# End of the TK loop
 		root.mainloop()
 
@@ -115,7 +111,6 @@ class BlackJackGUI:
 
 	"""Updates Bankroll display label every .3 seconds"""
 	def update_bankroll(self):
-		print("updating")
 		if type(self.bankroll_display) != type(None):
 			self.bankroll_display.config(
 				text=f"bankroll\n{self.player.bankroll}")
@@ -129,10 +124,11 @@ class BlackJackGUI:
 
 
 	"""Clear the unneeded widgets and move the bankroll display to 
-	prepare for the game"""
+	prepare for the game
+	- TODO: implement a purely random way to shuffle the cards. BE CREATIVE. 
+	base it one the weather in chattanooga or something."""
 	def start_game(self):
 		if self.player.bankroll > 0:
-			print("started_game")
 			# remove widgets
 			self.destroy_all_except(self.please_add_lable,
 				self.background_label, self.bankroll_display)
@@ -147,21 +143,8 @@ class BlackJackGUI:
 				font=("arial", "8","bold"), bg="black", fg="red")
 			self.please_add_lable.place(x=500, y=480)
 			self.warning_displayed = True
-
-
-	def toggle_fullscreen(self):
-		if self.is_fullscreen:
-			self.enter_fullscreen()
-		else:
-			self.exit_fullscreen()
-
-
-	def enter_fullscreen(self):
-		pass
-
-
-	def exit_fullscreen(self):
-		pass
+		# Dealer shuffles cards at the begining of the game
+		self.dealer.shuffle()
 
 
 	"""Player picks bet amount"""
@@ -199,8 +182,26 @@ class BlackJackGUI:
 
 
 	def deal_round(self):
+		# Clear widgets
 		self.destroy_all_except(self.background_label, 
 			self.current_bet_display, self.bankroll_display)
+		# deal hand on the backend
+		self.dealer.deal_round()
+		print(self.dealer.hand)
+		print(self.player.hand)
+		# Deal first card to player
+		p1card = tk.Label(self.root, image=self.player.hand[0].image)
+		p1card.place(x=250, y=300)
+		# Deal face down card to dealer
+		d1card = tk.Label(self.root, image=self.dealer.hand[0].image)
+		d1card.place(x=250, y=50)
+		# Deal second card to player
+		p2card = tk.Label(self.root, image=self.player.hand[1].image)
+		p2card.place(x=380, y=300)
+		# Deal second face-up card to dealer
+		d2card = tk.Label(self.root, image=self.dealer.hand[1].image)
+		d2card.place(x=380, y=50)
+
 
 	"""Destorys all the widget on the screen except for the widgets listed
 	in the parameters"""
@@ -233,12 +234,43 @@ class BlackJackGUI:
 				self.bankroll_display.config(font=("arial", 
 					str(font_size)))
 
+	"""Moves button to specififed x,y coordinates. The buttons still currently
+	leave a tral behind them.
+	- TODO: be able to specify movement speed as a parameter"""
+	def move_button(self, widget, x_coor, y_coor):
+		# get the widget's current location
+		self.root.update_idletasks()
+		current_x = widget.winfo_x()
+		current_y = widget.winfo_y()
 
+		# move widget towards specified location until it is reached
+		while current_x != x_coor or current_y != y_coor:
+			# get widgets current location
+			self.root.update_idletasks()
+			current_x = widget.winfo_x()
+			current_y = widget.winfo_y()
+			# move on x axis in the right direction
+			if current_x > x_coor:
+				self.root.after(15, widget.place_configure(x=current_x-1))
+			elif current_x < x_coor:
+				self.root.after(15, widget.place_configure(x=current_x+1))
+			# move on y axis in the right direction
+			if current_y > y_coor:
+				self.root.after(30, widget.place_configure(y=current_y-1))
+			elif current_y < y_coor:
+				self.root.after(30, widget.place_configure(y=current_y+1))
+			# update the widget's current location
+			current_x = widget.winfo_x()
+			current_y = widget.winfo_y()
+
+	"""Used when player buys their starting bankroll. Function called when
+	user presses the 500, 100, 50, 25 buttons."""
 	def buy_chips(self, amount):
 		self.player.buy_chips(amount)
 		self.update_bankroll()
 
-
+	"""Used when the player bets on each round. Function called when the player 
+	presses a button with a numerical amount of how much they want to bet."""
 	def place_bet(self, amount):
 		if amount <= self.player.bankroll:
 			if type(self.insufficient_funds) is not type(None):
@@ -250,7 +282,20 @@ class BlackJackGUI:
 			self.insufficient_funds = tk.Label(self.root, text="insufficient"
 				" funds!", bg='black', fg='red')
 			self.insufficient_funds.place(x=140, y=540)
-				
+
+
+
+
+	"""Attach images to each card's image attribute."""
+	def assign_img_to_cards(self, deck):
+		directory = os.fsencode("used files/Cards")	
+		deck_index = 0
+		for file in os.listdir(directory):
+			filename = os.fsdecode(file)
+			img_path = "used files/Cards/" + filename
+			img = self.sized_image(img_path, 107, 150)
+			deck[deck_index].assign_image(img)
+			deck_index += 1
 
 	"""Print cursor coordinate to consol. Just a developer tool I can
 	use instead of guessing coordinate when moving buttons and whatnot
@@ -266,8 +311,8 @@ class BlackJackGUI:
 	photo's dimesions. Accepts .png files."""
 	def sized_image(self, img_path, w, h):
 		img = Image.open(img_path)  # PIL solution
-		img = img.resize((w, h), Image.ANTIALIAS) # (height, width)
-		img = ImageTk.PhotoImage(img) # convert to PhotoImage
+		img = img.resize((w, h), Image.ANTIALIAS) # (width, height)
+		img = ImageTk.PhotoImage(image=img) # convert to PhotoImage
 		return img
 
 

@@ -38,15 +38,14 @@ class Dealer:
 
 	"""deals 2 cards to self and 2 cards to every player in the game"""
 	def deal_round(self):
-		# deal to self
-		self.hand.append(self.deck.pop(0))
-		self.hand.append(self.deck.pop(0))
-		self.update_hand_total()
-		# deal to each player
 		for player in self.players:
 			player.hand.append(self.deck.pop(0))
+			player.update_total()
+		self.hand.append(self.deck.pop(0))
+		for player in self.players:
 			player.hand.append(self.deck.pop(0))
 			player.update_total()
+		self.hand.append(self.deck.pop(0))
 
 
 	"""Deal player a card"""

@@ -12,6 +12,7 @@ class Card:
 	def __init__(self, suit, value):
 		self.suit = suit
 		self.value = value
+		self.image = None
 
 		try:
 			worth = int(value)
@@ -32,3 +33,7 @@ class Card:
 
 	def __repr__(self):
 		return f"{self.value} of {self.suit}"
+
+	"""Assign an image to the card for it to be represented in the GUI."""
+	def assign_image(self, img):
+		self.image = img
