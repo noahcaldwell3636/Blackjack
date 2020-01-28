@@ -13,6 +13,7 @@ class Card:
 		self.suit = suit
 		self.value = value
 		self.image = None
+		self.face_down_image = None
 
 		try:
 			worth = int(value)
@@ -37,3 +38,7 @@ class Card:
 	"""Assign an image to the card for it to be represented in the GUI."""
 	def assign_image(self, img):
 		self.image = img
+
+	"""Assign face down image"""
+	def assign_face_down_image(self, img):
+		self.face_down_image = img

@@ -15,6 +15,9 @@ class BlackJackGUI:
 		self.dealer = BJdealer.Dealer()
 		self.player = BJplayer.Player(self.dealer)
 		self.dealer.add_player(self.player)
+		self.face_down_card = None
+		self.player_card_widgets = []
+		self.PLAYER_CARDS_Y_COOR = 270
 		# button attributes that are referenced multiple times across 
 		# different methods (is that bad practice?)
 		self.bankroll_display = None
@@ -185,22 +188,43 @@ class BlackJackGUI:
 		# Clear widgets
 		self.destroy_all_except(self.background_label, 
 			self.current_bet_display, self.bankroll_display)
-		# deal hand on the backend
-		self.dealer.deal_round()
-		print(self.dealer.hand)
-		print(self.player.hand)
-		# Deal first card to player
-		p1card = tk.Label(self.root, image=self.player.hand[0].image)
-		p1card.place(x=250, y=300)
-		# Deal face down card to dealer
-		d1card = tk.Label(self.root, image=self.dealer.hand[0].image)
-		d1card.place(x=250, y=50)
-		# Deal second card to player
-		p2card = tk.Label(self.root, image=self.player.hand[1].image)
-		p2card.place(x=380, y=300)
-		# Deal second face-up card to dealer
-		d2card = tk.Label(self.root, image=self.dealer.hand[1].image)
-		d2card.place(x=380, y=50)
+		# if player still has money to play with
+		if self.player.bankroll > 0:
+			# deal hand on the backend
+			self.dealer.deal_round()
+			print(self.dealer.hand)
+			print(self.player.hand)
+			# Deal first card to player
+			p1card = tk.Label(self.root, image=self.player.hand[0].image)
+			p1card.place(x=250, y=self.PLAYER_CARDS_Y_COOR)
+			self.player_card_widgets.append(p1card)
+			# Deal face down card to dealer
+			d1card = tk.Label(self.root, 
+				image=self.dealer.hand[0].face_down_image)
+			d1card.place(x=250, y=50)
+			self.face_down_card = d1card
+			# Deal second card to player
+			p2card = tk.Label(self.root, image=self.player.hand[1].image)
+			p2card.place(x=380, y=self.PLAYER_CARDS_Y_COOR)
+			self.player_card_widgets.append(p2card)
+			# Deal second face-up card to dealer
+			d2card = tk.Label(self.root, image=self.dealer.hand[1].image)
+			d2card.place(x=380, y=50)
+			# Present player options
+			if self.player.get_hand_total == 21:
+				self.win_round()
+			else:
+				# place player option buttons
+				hit_btn = tk.Button(self.root, text="HIT", fg="black", 
+					bg="white", font=("arial", "19", "bold"), padx=22,
+					borderwidth=5, command=self.player_hit)
+				hit_btn.place(x=253, y=490)
+				stand_btn = tk.Button(self.root, text="STAND", fg="black", 
+					bg="white", font=("arial", "19", "bold"),
+					borderwidth=5, command=self.player_stand)
+				stand_btn.place(x=385, y=490)
+		else:
+			self.end_game()
 
 
 	"""Destorys all the widget on the screen except for the widgets listed
@@ -234,6 +258,7 @@ class BlackJackGUI:
 				self.bankroll_display.config(font=("arial", 
 					str(font_size)))
 
+
 	"""Moves button to specififed x,y coordinates. The buttons still currently
 	leave a tral behind them.
 	- TODO: be able to specify movement speed as a parameter"""
@@ -263,11 +288,13 @@ class BlackJackGUI:
 			current_x = widget.winfo_x()
 			current_y = widget.winfo_y()
 
+
 	"""Used when player buys their starting bankroll. Function called when
 	user presses the 500, 100, 50, 25 buttons."""
 	def buy_chips(self, amount):
 		self.player.buy_chips(amount)
 		self.update_bankroll()
+
 
 	"""Used when the player bets on each round. Function called when the player 
 	presses a button with a numerical amount of how much they want to bet."""
@@ -284,18 +311,74 @@ class BlackJackGUI:
 			self.insufficient_funds.place(x=140, y=540)
 
 
+	"""Pleyer chooses to get another card."""
+	def player_hit(self):
+		self.player.hit()
+		movement_amount = 30 - len(self.player.hand)
+		last_card = None
+		second_to_last_card = None
+		first_iteration = True
+		self.root.update_idletasks()
+		for card in self.player_card_widgets:
+			print("movement amount = " + str(movement_amount))
+			x_coor = card.winfo_x()
+			if card is self.player_card_widgets[0]:
+				card.place_configure(x=x_coor-movement_amount)
+			else:
+				card.place_configure(x=last_card.winfo_x() + 
+					movement_amount)
+			last_card = card
+			if card is self.player_card_widgets[-2]:
+				second_to_last_card = card
+		# calculate the placement of the new card
+		self.root.update_idletasks()
+		spacing_between_cards = (last_card.winfo_x() - 
+			second_to_last_card.winfo_x())
+		print(spacing_between_cards)
+		new_card_x_coor = last_card.winfo_x() + spacing_between_cards
+		# create the new card's widget
+		new_card_img = self.player.hand[-1].image
+		new_card_widget = tk.Label(self.root, image=new_card_img)
+		new_card_widget.place(x=new_card_x_coor, 
+			y=self.PLAYER_CARDS_Y_COOR)
+		self.player_card_widgets.append(new_card_widget)
+
+	"""Player elects to stand."""
+	def player_stand(self):
+		print("implement player_stand!")
 
 
-	"""Attach images to each card's image attribute."""
+	"""Display end of game screen."""
+	def end_game(self):
+		print("Implement the 'end_game' method!")
+		pass
+
+
+	"""Player wins round"""
+	def player_wins_round(self):
+		print("Implement 'player_wins_round' method!")
+
+
+	"""Attach images to each card's image attribute.
+	- ALERT: this function is likely the reason for the delayed load time on 
+	startup. Consider finding a more efficient method."""
 	def assign_img_to_cards(self, deck):
 		directory = os.fsencode("used files/Cards")	
 		deck_index = 0
 		for file in os.listdir(directory):
+			# Assign card img
 			filename = os.fsdecode(file)
 			img_path = "used files/Cards/" + filename
 			img = self.sized_image(img_path, 107, 150)
 			deck[deck_index].assign_image(img)
 			deck_index += 1
+		# assign face down image to cards
+		for card in deck:
+			img_name = "used files/back_of_card.png"
+			img = self.sized_image(img_name, 107, 150)
+			card.assign_face_down_image(img)
+			print(card)
+
 
 	"""Print cursor coordinate to consol. Just a developer tool I can
 	use instead of guessing coordinate when moving buttons and whatnot
@@ -314,6 +397,11 @@ class BlackJackGUI:
 		img = img.resize((w, h), Image.ANTIALIAS) # (width, height)
 		img = ImageTk.PhotoImage(image=img) # convert to PhotoImage
 		return img
+
+	"""Expose the dealer's face down card"""
+	def flip_face_down_card(self):
+		print(type(self.face_down_card))
+		self.face_down_card.configure(image=self.dealer.hand[0].image)
 
 
 gui = BlackJackGUI()
