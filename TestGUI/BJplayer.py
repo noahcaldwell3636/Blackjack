@@ -37,9 +37,10 @@ class Player:
 
 	"""Player will finish the round with his current hand"""
 	def stand(self):
-		self.status = "stand"
-		print("")
-		print("Player stands")
+		if self.status == "21" or "busted":
+			self.status = "stand"
+			print("")
+			print("Player stands")
 
 	"""Player requests another card from dealer."""
 	def hit(self):
@@ -54,11 +55,22 @@ class Player:
 	def buy_chips(self, amount):
 		self.bankroll += amount
 
-	"""Update total of hand."""
+	"""Update total of hand. Also updates player's status as well...
+	- TODO: figure out the logic if the player is dealt 2 aces, the 
+	game currently just says the player's total is 2
+	- TODO: seperate this method into two methods: update_total and
+	update status"""
 	def update_total(self):
 		self.total = 0
+		# Calculate non-ace cards first
 		for card in self.hand:
-			self.total += card.worth
+			if card.value != 'A':
+				self.total += card.worth
+		for card in self.hand: 
+			if card.value == 'A':
+				if self.total + 11 > 21:
+					card.worth = 1
+				self.total += card.worth
 		print("")
 		print(f"Your total = {self.total}")
 		if self.total == 21:
@@ -69,3 +81,4 @@ class Player:
 			self.status = "busted"
 			print("")
 			print(f"The you busted with a hand of {self.total}")
+
