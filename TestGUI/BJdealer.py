@@ -1,5 +1,5 @@
 from BJcard import Card
-from random import *
+from random import seed, shuffle
 
 """ 
 - Handles the game's deck
@@ -26,10 +26,7 @@ class Dealer:
 
 	"""Returns the amount of cards the dealer's deck."""
 	def  get_deck_count(self):
-		count = 0
-		for card in self.deck:
-			count += 1
-		return count
+		return len(self.deck)
 
 	"""Get the combined value of the dealer's hand in accordinance with
 	the rules of blackjack"""
