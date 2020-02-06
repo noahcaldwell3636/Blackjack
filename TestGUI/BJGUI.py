@@ -26,13 +26,14 @@ class BlackJackGUI:
 		# different methods (is that bad practice?)
 		self.bankroll_display = None
 		self.current_bet_display = None
-		self.hand_total_display = None
+		self.Player_hand_total_display = None
 		self.please_add_lable = None
 		self.insufficient_funds = None
 		self.hit_btn = None
 		self.stand_btn = None
 		# Developer tools
 		self.is_shuffling_deck = False
+		self.SHUFFLE_SEED = 18
 
 
 
@@ -171,6 +172,10 @@ class BlackJackGUI:
 		# Dealer shuffles cards at the begining of the game
 		if self.is_shuffling_deck:
 			self.dealer.shuffle()
+		else:
+			self.dealer.seeded_shuffle(self.SHUFFLE_SEED)
+			print(self.dealer.deck)
+
 
 
 	def choose_bet(self):
@@ -223,9 +228,13 @@ class BlackJackGUI:
 			self.bankroll_display)
 		self.root.update_idletasks()
 		# Create a display for players hand total
-		self.hand_total_display = tk.Label(self.root, text=f"Hand Total\n {self.player.total}",
+		self.Player_hand_total_display = tk.Label(self.root, text=f"Hand Total\n {self.player.hand_total}",
 			font=("arial", 18), bg='black', fg='white')
-		self.hand_total_display.place(x=575, y=530)
+		self.Player_hand_total_display.place(x=575, y=530)
+		# Create dealer hand total display
+		self.Dealer_hand_total_display = tk.Label(self.root, text="Dealer\nHand Total\n???",
+			bg='black', fg='white', font=("arial", 15))
+		self.Dealer_hand_total_display.place(x=585, y=50)
 		# if player still has money to play with, deal cards for the round
 		if self.player.bankroll > 0:
 			# deal hand on the backend
@@ -253,8 +262,12 @@ class BlackJackGUI:
 			d2card = tk.Label(self.root, image=self.dealer.hand[1].image)
 			d2card.place(x=380, y=self.DEALER_CARDS_Y_COOR)
 			self.dealer_card_widgets.append(d2card)
+			# Update Players hand total display
+			self.Player_hand_total_display.configure(text=f"Hand Total\n{self.player.hand_total}")
+			# Update root frame
 			self.root.after(1000, self.root.update_idletasks())
-			if self.player.get_hand_total == 21:
+			# if player gets blackjack on initial deal, win automatically
+			if self.player.status == "21" and len(player.hand) == 2:
 				self.win_round()
 			else:
 				# place player option buttons
@@ -383,7 +396,7 @@ class BlackJackGUI:
 		the whole thing, you fucktwit.
 		"""		
 		# Not 100% sure this update is necessary
-		self.player.update_total()
+		self.player.update_hand_total()
 		# If it is still the player's turn, let him hit for another card
 		if self.player.status == "playing":
 			# Player is dealt another card on the backend
@@ -422,7 +435,7 @@ class BlackJackGUI:
 			new_card_widget.place(x=new_card_x_coor, 
 				y=self.PLAYER_CARDS_Y_COOR)
 			self.player_card_widgets.append(new_card_widget)
-			self.hand_total_display.configure(text=f"Hand Total\n {self.player.total}")
+			self.Player_hand_total_display.configure(text=f"Hand Total\n {self.player.hand_total}")
 			self.update_player_status()
 
 
@@ -458,7 +471,10 @@ class BlackJackGUI:
 
 	def prompt_dealers_turn(self):
 		self.flip_face_down_card()
-		while self.dealer.get_hand_total() < 17:
+		self.dealer.update_hand_total()
+		self.Dealer_hand_total_display.configure(
+			text=f"Dealer\nHand Total\n{self.dealer.hand_total}")
+		while self.dealer.hand_total < 17:
 			# Deal the player cards in the GUI
 			movement_amount = 30 - len(self.dealer.hand)
 			last_card = None
@@ -495,7 +511,7 @@ class BlackJackGUI:
 			new_card_widget.place(x=new_card_x_coor, 
 				y=self.DEALER_CARDS_Y_COOR)
 			self.dealer_card_widgets.append(new_card_widget)
-			self.dealer.update_hand_total()
+			self.Dealer_hand_total_display.configure(text=f"Dealer\nHand Total\n{self.dealer.hand_total}")
 			self.root.update_idletasks()
 			
 
@@ -508,7 +524,14 @@ class BlackJackGUI:
 			self.update_current_bet()
 		# dealer busted, player winds
 		elif self.dealer.status == "busted":
-			print("dealer buster, player collects pot")
+			print("dealer busts, player collects pot")
+			# outcome display
+			self.hit_btn.destroy()
+			self.stand_btn.destroy()
+			outcome_display = tk.Label(self.root, text="Dealer busted,\n you win!",
+				font=('arial', 28))
+			outcome_display.place(x=230, y=465)
+			# allcate pot
 			self.player.bankroll += self.player.current_bet * 2
 			self.player.current_bet = 0
 			self.update_current_bet()
@@ -523,9 +546,9 @@ class BlackJackGUI:
 				# remove 'hit' and 'stand' button, show Player wins' display
 				self.hit_btn.destroy()
 				self.stand_btn.destroy()
-				player_wins_display = tk.Label(self.root, text="Player wins",
+				outcome_display = tk.Label(self.root, text="Player wins",
 					font=("arial", "30")) 
-				player_wins_display.place(x=240, y=480)
+				outcome_display.place(x=240, y=480)
 				#player_wins_display.place(x=)
 				# allocate pot to player
 				self.player.bankroll += self.player.current_bet * 2
@@ -535,20 +558,31 @@ class BlackJackGUI:
 			# Player has smaller hand, player loses
 			elif self.player.get_hand_total() < self.dealer.get_hand_total():
 				print("player has smaller hand, dealer collects pot")
+				self.hit_btn.destroy()
+				self.stand_btn.destroy()
+				outcome_display = tk.Label(self.root, text="You Lose!",
+					font=("arial", "35"))
+				outcome_display.place(x=250, y=490)
 				self.player.current_bet = 0
 				self.update_current_bet()
 			# The player and the dealer have the same count
 			else:
 				print("Tie! New round!")
+				# Clear hit and stand buttons to make room for tie banner
+				self.hit_btn.destroy()
+				self.stand_btn.destroy()
+				self.root.update_idletasks()
 				# Display Tie banner to user
-				tie_banner = tk.Label(self.root, text="Tie!", font=("arial", "200"),
-				fg='yellow', bg='black')
-				tie_banner.place(x=200, y=250)
+				tie_banner = tk.Label(self.root, text="Tie!", font=("arial", 50),
+				fg='black', bg='white')
+				tie_banner.place(x=250, y=490)
 				# give bet back to player
 				self.player.bankroll += self.player.current_bet
 				self.player.current_bet = 0
 				self.update_bankroll()
 				self.update_current_bet()
+		else:
+			print("Unhandled case in calculate_winner method")
 
 
 	"""Give dealer a card."""

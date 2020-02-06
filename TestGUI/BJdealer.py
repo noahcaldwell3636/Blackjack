@@ -1,5 +1,5 @@
 from BJcard import Card
-from random import shuffle
+from random import *
 
 """ 
 - Handles the game's deck
@@ -47,10 +47,10 @@ class Dealer:
 		self.hand.append(self.deck.pop(0))
 		# deal player second card
 		self.player.hand.append(self.deck.pop(0))
-		self.player.update_total()
+		self.player.update_hand_total()
 		# deal self second card
 		self.hand.append(self.deck.pop(0))
-		self.update_total()
+		self.update_hand_total()
 
 
 	"""Deal player a card"""
@@ -67,6 +67,12 @@ class Dealer:
 			shuffle(self.deck)
 			return self.deck
 
+	def seeded_shuffle(self, num):	
+		seed(num)
+		shuffle(self.deck)
+		return self.deck
+
+
 	"""Add player object to the game"""
 	def add_player(self, player):
 		self.player = player
@@ -76,20 +82,32 @@ class Dealer:
 	def allocate_pot(self):
 		pass
 
-	"""Tallys up the combined total of the cards in the dealer's hand
-	and update the hand_total attribute. Should be called everytime
-	their is a change to the player's hand.
+	"""Update total of hand. Also updates player's status as well...
 	- TODO: figure out the logic if the player is dealt 2 aces, the 
-	game currently just says the player's total is 2"""
+	game currently just says the player's total is 2
+	- TODO: seperate this method into two methods: update_total and
+	update status"""
 	def update_hand_total(self):
 		self.hand_total = 0
+		# Calculate non-ace cards first
 		for card in self.hand:
-			if card.value == "A" and self.get_hand_total() <= 11:
-				card.worth = 1
-			self.hand_total += card.worth
-		if self.hand_total > 21:
+			if card.value != 'A':
+				self.hand_total += card.worth
+		for card in self.hand: 
+			if card.value == 'A':
+				if self.hand_total + 11 > 21:
+					card.worth = 1
+				self.hand_total += card.worth
+		print("")
+		print(f"Your total = {self.hand_total}")
+		if self.hand_total == 21:
+			self.status = "21"
+			print("")
+			print("You got 21!")
+		elif self.hand_total > 21:
 			self.status = "busted"
-			print("the dealer busted")
+			print("")
+			print(f"The dealer with a hand of {self.hand_total}")
 
 	"""Add a card from the deck to the dealer's hand"""
 	def hit(self):

@@ -7,7 +7,7 @@ class Player:
 	def __init__(self, dealer):
 		self.bankroll = 0
 		self.hand = [] #hand of card objects
-		self.total = 0
+		self.hand_total = 0
 		self.current_bet = 0
 		self.status = "playing"
 		self.dealer = dealer
@@ -33,7 +33,7 @@ class Player:
 	rules. Aces need to be accounted for correctly as they can be either
 	a value of one or eleven."""
 	def get_hand_total(self):
-		return self.total
+		return self.hand_total
 
 	"""Player will finish the round with his current hand"""
 	def stand(self):
@@ -48,7 +48,7 @@ class Player:
 		self.hand.append(card)
 		print("")
 		print(f"The player hit and got {card}")
-		self.update_total()
+		self.update_hand_total()
 
 	"""Buy the amount of money the player will have to bet.
 	@param amount - The amount of money the player wants to buy."""	
@@ -60,25 +60,25 @@ class Player:
 	game currently just says the player's total is 2
 	- TODO: seperate this method into two methods: update_total and
 	update status"""
-	def update_total(self):
-		self.total = 0
+	def update_hand_total(self):
+		self.hand_total = 0
 		# Calculate non-ace cards first
 		for card in self.hand:
 			if card.value != 'A':
-				self.total += card.worth
+				self.hand_total += card.worth
 		for card in self.hand: 
 			if card.value == 'A':
-				if self.total + 11 > 21:
+				if self.hand_total + 11 > 21:
 					card.worth = 1
-				self.total += card.worth
+				self.hand_total += card.worth
 		print("")
-		print(f"Your total = {self.total}")
-		if self.total == 21:
+		print(f"Your total = {self.hand_total}")
+		if self.hand_total == 21:
 			self.status = "21"
 			print("")
 			print("You got 21!")
-		elif self.total > 21:
+		elif self.hand_total > 21:
 			self.status = "busted"
 			print("")
-			print(f"The you busted with a hand of {self.total}")
+			print(f"The you busted with a hand of {self.hand_total}")
 
