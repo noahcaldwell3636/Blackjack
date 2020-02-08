@@ -501,6 +501,7 @@ class BlackJackGUI:
 			# Move the cards that are already displayed to make room for 
 			# the new card.
 			for card in self.dealer_card_widgets:
+				# get card's x-coordinate
 				x_coor = card.winfo_x()
 				# if the card widget is the player's firstcard, move to the
 				# left of it's current position
@@ -692,7 +693,7 @@ class BlackJackGUI:
 		# current bet display
 		self.current_bet_display = tk.Label(self.root, 
 			text=f"current bet\n{self.player.current_bet}", 
-			font=("arial", "15"), bg="maroon", fg="white",
+			font=("arial", "15"), bg="maroon", fg="black",
 			borderwidth=3, relief="solid")
 		self.current_bet_display.place(x=24, y=442)
 		# ready to deal round button
