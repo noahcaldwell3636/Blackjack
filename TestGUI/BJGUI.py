@@ -88,9 +88,13 @@ class BlackJackGUI:
 		for w in widgets:
 			w.destroy()
 		# add game screen
-		background_image = self.sized_image("C:/Users/Noah Caldwell/"
-			"Documents/SourceCode/TestGUI - Blackjack/TestGUI/"
-			"used files/greenfelt.png", 720, 600)
+		this_scirpts_directory = os.path.dirname(__file__)
+		background_img_file_path = os.path.join(
+      		this_scirpts_directory,
+			"used files",
+   			"greenfelt.png",
+        )
+		background_image = self.sized_image(background_img_file_path, 720, 600)
 		self.background_label = tk.Label(self.root, image=background_image)
 		self.background_label.photo = background_image
 		self.background_label.place(x=0, y=0)
