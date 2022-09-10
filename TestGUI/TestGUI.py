@@ -124,7 +124,7 @@ class testGUI:
 	photo's dimesions. Accepts .png files."""
 	def sized_image(self, img_path, w, h):
 		img = Image.open(img_path)  # PIL solution
-		img = img.resize((w, h), Image.ANTIALIAS) # (height, width)
+		img = img.resize((w, h), Image.Resampling.LANCZOS) # (height, width)
 		img = ImageTk.PhotoImage(img) # convert to PhotoImage
 		return img
 
@@ -134,9 +134,9 @@ class testGUI:
 		# Create window
 		root = Tk()
 		root.title("Test GUI")
-		root.iconbitmap(
-			"C:/Users/Noah Caldwell/Documents/SourceCode/TestGUI/used "
-			"files/checkbox.ico")
+		current_directory = os.path.dirname(__file__)
+		used_files_path = os.path.join(current_directory, "used files")
+		root.iconbitmap(os.path.join(used_files_path,"checkbox.ico"))
 		# Display the user's test script as the main title/header of the window
 		global title_font
 		path = main.__file__ # will show the actual test file thats using this module
@@ -158,9 +158,9 @@ class testGUI:
 		# Add information for each test case
 		row_index = 2
 		success_img = self.sized_image(
-			"C:/Users/Noah Caldwell/Documents/SourceCode/TestGUI/used files/Check.png", 30, 30)
+			os.path.join(used_files_path, "Check.png"), 30, 30)
 		fail_img = self.sized_image(
-			"C:/Users/Noah Caldwell/Documents/SourceCode/TestGUI/used files/cross.png", 30, 30)
+			os.path.join(used_files_path, "cross.png"), 30, 30)
 		for test_case in self.testCases:
 			# Display Method Name
 			method = test_case.get('method', 'Method couldnt be found );')
@@ -234,3 +234,6 @@ class testGUI:
 		for method in attributes:
 			if inspect.ismethod(method) and method.__name__[0:4] == "test":
 				method()
+    
+# test = testGUI()
+# test.main()
