@@ -23,6 +23,7 @@ class testGUI:
 
 
 	def setup(self):
+		print("testGUI.setup() is yet to be implemented")
 		pass
 
 
