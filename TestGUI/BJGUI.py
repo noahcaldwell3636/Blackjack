@@ -9,7 +9,7 @@ import BJdealer
 class BlackJackGUI:
 	
 	def __init__(self):
-     
+	 
 		# constants
 		self.WINDOW_WIDTH = 720
 		self.WINDOW_HEIGHT = 600
@@ -39,33 +39,22 @@ class BlackJackGUI:
 		self.is_shuffling_deck = False # set to TRUE in production
 		self.SHUFFLE_SEED = 18
 
-
+	def fetch_asset(self, filename: str):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"used files",
+			filename
+		)
 
 	def create_GUI(self):
-		"""Main GUI method
+		"""This method initializes application window for the blackjack game
+		to be displayed.
 		"""
-		# window setup
-		root = tk.Tk()
-		root.title("BlackJack!")
-		root.iconbitmap("used files/icon.ico")
-		root.geometry(str(self.WINDOW_WIDTH)+ "x" + 
-			str(self.WINDOW_HEIGHT))
-		self.root = root
-  
-		# Create start screen
-		root.configure(background='black')
-		title_letters = self.sized_image(
-			"used files/generatedtext.png", 
-			600, 
-			100)
-		self.root.update_idletasks()
-  
-		# Loading display
-		loading_display = tk.Label(self.root, text="Loading...",
-		bg='black', fg='black', font=("arial", '30'))
-		loading_display.place(x=275, y=270)
-		self.root.update_idletasks()
-  
+		self._initialize_tk_window()
+		self.root.configure(background='black')
+		title_letters = self._title_letters()
+		loading_display = self._loading_display()
+		
 		# Title letters
 		title_label = tk.Label(image=title_letters, bg="#EA1616")
 		title_xcoor = (720/2) - (600/2)
@@ -88,8 +77,46 @@ class BlackJackGUI:
 		# Destroy loading display
 		loading_display.destroy()
 		# End of the TK loop
-		root.mainloop()
+		self.root.mainloop()
 
+
+	def _initialize_tk_window(self):
+		"""Helper method for the 'create_GUI' function. It initializes
+		the tkinter application window. The method dictates the window title
+		(shown on the window top banner), the window size, and the window icon.
+		"""
+		root = tk.Tk()
+		root.title("BlackJack!")
+		root.iconbitmap(self.fetch_asset("icon.ico"))
+		#root.iconbitmap("used files/icon.ico")
+		root.geometry(str(self.WINDOW_WIDTH)+ "x" + 
+			str(self.WINDOW_HEIGHT))
+		self.root = root
+
+	def _title_letters(self):
+		"""Helper method intended for 'create_GUI' function the starting/title 
+  		screen.
+		"""
+		title_letters = self.sized_image(
+			self.fetch_asset("generatedtext.png"), 
+			600, 
+			100)
+		self.root.update_idletasks()
+		return title_letters
+  
+	def _loading_display(self):
+		"""Helper method intended for the 'create_GUI' function to show the user
+		that the game is loading (and not frozen/stuck).
+
+		Returns:
+			tkinter.Label : the display of "loading"
+		"""
+		loading_display = tk.Label(self.root, text="Loading...",
+		bg='black', fg='black', font=("arial", '30'))
+		loading_display.place(x=275, y=270)
+		self.root.update_idletasks()
+		return loading_display
+  
 
 	def setup_new_game(self):
 		"""set up for after the player selects 'play' from the start menu."""
@@ -100,10 +127,10 @@ class BlackJackGUI:
 		# add game screen
 		this_scirpts_directory = os.path.dirname(__file__)
 		background_img_file_path = os.path.join(
-      		this_scirpts_directory,
+	  		this_scirpts_directory,
 			"used files",
    			"greenfelt.png",
-        )
+		)
 		background_image = self.sized_image(background_img_file_path, 720, 600)
 		self.background_label = tk.Label(self.root, image=background_image)
 		self.background_label.photo = background_image
@@ -796,18 +823,23 @@ class BlackJackGUI:
 	- ALERT: this function is likely the reason for the delayed load time on 
 	startup. Consider finding a more efficient method."""
 	def assign_img_to_cards(self, deck):
-		directory = os.fsencode("used files/Cards")	
+		directory = os.fsencode(
+			os.path.join(
+       			os.path.dirname(__file__),
+      			"used files/Cards"	
+			)
+  		)
 		deck_index = 0
 		for file in os.listdir(directory):
 			# Assign card img
 			filename = os.fsdecode(file)
-			img_path = "used files/Cards/" + filename
+			img_path = self.fetch_asset(f"Cards/{filename}")
 			img = self.sized_image(img_path, 107, 150)
 			deck[deck_index].assign_image(img)
 			deck_index += 1
 		# assign face down image to cards
 		for card in deck:
-			img_name = "used files/back_of_card.png"
+			img_name = self.fetch_asset("back_of_card.png")
 			img = self.sized_image(img_name, 107, 150)
 			card.assign_face_down_image(img)
 
