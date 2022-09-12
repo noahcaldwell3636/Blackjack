@@ -27,6 +27,13 @@ class testGUI:
 
 
 	def assertEquals(self, inspect_method, test_value, expected_value):
+		"""_summary_
+
+		Args:
+			inspect_method (_type_): _description_
+			test_value (_type_): _description_
+			expected_value (_type_): _description_
+		"""
 		method = self._reduce_to_method(inspect_method)
 		assertion = self._reduce_to_method(inspect.currentframe())
 		# Check is the assertion is correct, currently casts values to strings. May want to 

@@ -9,11 +9,13 @@ import BJdealer
 class BlackJackGUI:
 	
 	def __init__(self):
+     
 		# constants
 		self.WINDOW_WIDTH = 720
 		self.WINDOW_HEIGHT = 600
 		self.PLAYER_CARDS_Y_COOR = 270
 		self.DEALER_CARDS_Y_COOR = 50
+  
 		# core attributes
 		self.root = None
 		self.dealer = BJdealer.Dealer()
@@ -22,17 +24,19 @@ class BlackJackGUI:
 		self.face_down_card = None
 		self.player_card_widgets = []
 		self.dealer_card_widgets = []
+  
 		# button attributes that are referenced multiple times across 
-		# different methods (is that bad practice?)
+		# different methods (...is that bad practice?)
 		self.bankroll_display = None
 		self.current_bet_display = None
 		self.player_hand_total_display = None
-		self.please_add_lable = None
+		self.please_add_label = None
 		self.insufficient_funds = None
 		self.hit_btn = None
 		self.stand_btn = None
+  
 		# Developer tools
-		self.is_shuffling_deck = False
+		self.is_shuffling_deck = False # set to TRUE in production
 		self.SHUFFLE_SEED = 18
 
 
@@ -47,6 +51,7 @@ class BlackJackGUI:
 		root.geometry(str(self.WINDOW_WIDTH)+ "x" + 
 			str(self.WINDOW_HEIGHT))
 		self.root = root
+  
 		# Create start screen
 		root.configure(background='black')
 		title_letters = self.sized_image(
@@ -54,16 +59,19 @@ class BlackJackGUI:
 			600, 
 			100)
 		self.root.update_idletasks()
+  
 		# Loading display
 		loading_display = tk.Label(self.root, text="Loading...",
 		bg='black', fg='black', font=("arial", '30'))
 		loading_display.place(x=275, y=270)
 		self.root.update_idletasks()
+  
 		# Title letters
 		title_label = tk.Label(image=title_letters, bg="#EA1616")
 		title_xcoor = (720/2) - (600/2)
 		title_ycoor = (600/2) - 240
 		title_label.place(x=title_xcoor, y=title_ycoor)
+  
 		# Play button
 		play_btn = tk.Button(text="PLAY", width=10, 
 			bg="#EA1616", font=("arial", "30"), 
@@ -71,8 +79,10 @@ class BlackJackGUI:
 		play_btn_x = (self.WINDOW_WIDTH/2) - 115
 		play_btn_y = (self.WINDOW_HEIGHT/2) - (15/2)
 		play_btn.place(x=play_btn_x, y=play_btn_y)
+  
 		# key bindings
 		self.root.bind("q", self.display_mouse_coordinates)
+  
 		# Assign images to cards 
 		self.assign_img_to_cards(self.dealer.deck)
 		# Destroy loading display
@@ -161,18 +171,18 @@ class BlackJackGUI:
 		"""		
 		if self.player.bankroll > 0:
 			# remove widgets
-			self.destroy_all_except(self.please_add_lable,
+			self.destroy_all_except(self.please_add_label,
 				self.background_label, self.bankroll_display)
-			if self.please_add_lable is not None:
-				self.please_add_lable.destroy()
+			if self.please_add_label is not None:
+				self.please_add_label.destroy()
 			# move bankroll display to left corner
 			self.move_bankroll_display()
 			self.choose_bet()
 		else:
-			self.please_add_lable = tk.Label(self.root, 
+			self.please_add_label = tk.Label(self.root, 
 				text="Please choose an amount of money\n to play with.", 
 				font=("arial", "8","bold"), bg="black", fg="red")
-			self.please_add_lable.place(x=500, y=480)
+			self.please_add_label.place(x=500, y=480)
 			self.warning_displayed = True
 		# Dealer shuffles cards at the begining of the game
 		if self.is_shuffling_deck:
