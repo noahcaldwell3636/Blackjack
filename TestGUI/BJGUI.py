@@ -46,6 +46,9 @@ class BlackJackGUI:
             filename
         )
 
+################## initialize game ############################################
+###############################################################################
+
     def initalize_gui(self):
         """This method initializes application window for the blackjack game
         to be displayed.
@@ -100,72 +103,96 @@ class BlackJackGUI:
         play_btn_y = (self.WINDOW_HEIGHT/2) - (15/2)
         play_btn.place(x=play_btn_x, y=play_btn_y)
 
+################## game setup #################################################
+###############################################################################
+
+    def setup_new_game(self):
+        """set up for after the player selects 'play' from the start menu."""
+        self._clear_all_widgets()
+        self._green_felt_background()
+        # Player buys bankroll
+        self._bankroll_instructions()
+        self._five_hun_buyin_btn()
+        self._one_hun_buyin_btn()
+        self._fifty_buyin_btn()
+        self._twenty_five_buyin_btn()
+        self._total_bankroll_display()
+        # ready up button
+        self._ready_up_btn()
+    
+    
+    def _clear_all_widgets(self):    
+        # clear widgets
+        widgets = self.root.winfo_children()
+        for w in widgets:
+            w.destroy()
+            
+            
+    def _green_felt_background(self):
+        # add game screen
+        this_scirpts_directory = os.path.dirname(__file__)
+        background_img_file_path = os.path.join(
+            this_scirpts_directory,
+            "used files",
+            "greenfelt.png",
+        )
+        background_image = self.sized_image(background_img_file_path, 720, 600)
+        self.background_label = tk.Label(self.root, image=background_image)
+        self.background_label.photo = background_image
+        self.background_label.place(x=0, y=0)
 
 
-        def setup_new_game(self):
-            """set up for after the player selects 'play' from the start menu."""
-            self._clear_all_widgets()
-            self._green_felt_background()
-            # Player buys bankroll
-            # Instruction text
-            self.instr_text = tk.Label(self.root, 
-                text=f"How much do you want\n  to play with?", 
-                font=("arial", "40"), bg="black", fg="white")
-            self.instr_text.place(x=75, y=80)
-            #  buy five hundred button
-            self.five_hun_btn = tk.Button(self.root, text="500", width=5, 
-                bg="black", fg="white", font=("arial", "30"), 
-                command=lambda: self.buy_chips(500))
-            self.five_hun_btn.place(x=100, y=300)
-            # buy one hundred button
-            self.one_hun_btn = tk.Button(self.root, text="100", width=5, 
-                bg="black", fg="white", font=("arial", "30"), 
-                command=lambda: self.buy_chips(100))
-            self.one_hun_btn.place(x=230, y=300)
-            # buy fifty button
-            self.fifty_btn = tk.Button(self.root, text="50", width=5, 
-                bg="black", fg="white", font=("arial", "30"), 
-                command=lambda: self.buy_chips(50))
-            self.fifty_btn.place(x=360, y=300)
-            # buy twenty five button
-            self.twenty_five_btn = tk.Button(self.root, text="25", width=5, 
-                bg="black", fg="white", font=("arial", "30"), 
-                command=lambda: self.buy_chips(25))
-            self.twenty_five_btn.place(x=490, y=300)
-            # display total bankroll as you buy chips
-            self.bankroll_display = tk.Label(self.root, 
-                text=f"bankroll\n{self.player.bankroll}", 
-                font=("arial", "40"), bg="maroon", fg="black",
-                borderwidth=3, relief="solid")
-            self.bankroll_display.place(x=265, y=430)
-            # place 'ready to play' button
-            self.ready_btn = tk.Button(self.root, text="READY!", bg="white", 
-                fg="black", font=("arial", "20", "bold"), 
-                command=self.start_game)
-            self.ready_btn.place(x=570, y=530)
+    def _bankroll_instructions(self):
+        self.instr_text = tk.Label(self.root, 
+            text=f"How much do you want\n  to play with?", 
+            font=("arial", "40"), bg="black", fg="white")
+        self.instr_text.place(x=75, y=80)
         
         
-        def _clear_all_widgets(self):    
-            # clear widgets
-            widgets = self.root.winfo_children()
-            for w in widgets:
-                w.destroy()
-                
-                
-        def _green_felt_background(self):
-            # add game screen
-            this_scirpts_directory = os.path.dirname(__file__)
-            background_img_file_path = os.path.join(
-                this_scirpts_directory,
-                "used files",
-                "greenfelt.png",
-            )
-            background_image = self.sized_image(background_img_file_path, 720, 600)
-            self.background_label = tk.Label(self.root, image=background_image)
-            self.background_label.photo = background_image
-            self.background_label.place(x=0, y=0)
+    def _five_hun_buyin_btn(self):
+        self.five_hun_btn = tk.Button(self.root, text="500", width=5, 
+            bg="black", fg="white", font=("arial", "30"), 
+            command=lambda: self.buy_chips(500))
+        self.five_hun_btn.place(x=100, y=300)
+    
+    
+    def _one_hun_buyin_btn(self):
+        self.one_hun_btn = tk.Button(self.root, text="100", width=5, 
+            bg="black", fg="white", font=("arial", "30"), 
+            command=lambda: self.buy_chips(100))
+        self.one_hun_btn.place(x=230, y=300)
+    
+    
+    def _fifty_buyin_btn(self):
+        self.fifty_btn = tk.Button(self.root, text="50", width=5, 
+            bg="black", fg="white", font=("arial", "30"), 
+            command=lambda: self.buy_chips(50))
+        self.fifty_btn.place(x=360, y=300)
+        
+        
+    def _twenty_five_buyin_btn(self):
+        self.twenty_five_btn = tk.Button(self.root, text="25", width=5, 
+            bg="black", fg="white", font=("arial", "30"), 
+            command=lambda: self.buy_chips(25))
+        self.twenty_five_btn.place(x=490, y=300)
+    
+        
+    def _total_bankroll_display(self):
+        # display total bankroll as you buy chips
+        self.bankroll_display = tk.Label(self.root, 
+            text=f"bankroll\n{self.player.bankroll}", 
+            font=("arial", "40"), bg="maroon", fg="black",
+            borderwidth=3, relief="solid")
+        self.bankroll_display.place(x=265, y=430)
+        
+        
+    def _ready_up_btn(self):
+        self.ready_btn = tk.Button(self.root, text="READY!", bg="white", 
+            fg="black", font=("arial", "20", "bold"), 
+            command=self.start_game)
+        self.ready_btn.place(x=570, y=530)
 
-
+###############################################################################
 
     def update_bankroll(self):
         """Updates Bankroll display number
@@ -204,6 +231,7 @@ class BlackJackGUI:
                 font=("arial", "8","bold"), bg="black", fg="red")
             self.please_add_label.place(x=500, y=480)
             self.warning_displayed = True
+            
         # Dealer shuffles cards at the begining of the game
         if self.is_shuffling_deck:
             self.dealer.shuffle()
@@ -272,7 +300,7 @@ class BlackJackGUI:
             bg='maroon', fg='black', borderwidth=3, relief="solid", font=("arial", 15))
         self.dealer_hand_total_display.place(x=585, y=50)
         # if player still has money to play with, deal cards for the round
-        if self.player.bankroll > 0:
+        if self.player.bankroll > 0 or self.player.current_bet > 0:
             # deal hand on the backend
             self.dealer.deal_round()
             print("dealer's hand " + str(self.dealer.hand))
@@ -373,7 +401,7 @@ class BlackJackGUI:
 
     def move_button(self, widget, x_coor, y_coor):
         """Moves button to specififed x,y coordinates. The buttons still currently
-        leave a tral behind them.
+        leave an image trail behind them when moving.
 
         - TODO: be able to specify movement speed as a parameter
         
@@ -744,7 +772,7 @@ class BlackJackGUI:
                 self.bankroll_display,
                 self.dealer_hand_total_display,
                 self.player_hand_total_display)
-            if self.player.bankroll > 0:
+            if self.player.bankroll > 0 or self.player.current_bet > 0:
                 # deal hand on the backend
                 self.dealer.deal_round()
                 print("dealer's hand " + str(self.dealer.hand))
@@ -838,7 +866,7 @@ class BlackJackGUI:
 
 
     """Print cursor coordinate to consol. Just a developer tool I can
-    use instead of guessing coordinate when moving buttons and whatnot
+    use instead of guessing coordinate when placing buttons and whatnot
     around."""
     def display_mouse_coordinates(self, event):
         x, y = event.x, event.y
