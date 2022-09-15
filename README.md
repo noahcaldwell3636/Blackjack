@@ -20,8 +20,10 @@ test cases in a GUI for easy viewing.
    cd .\Blackjack</code></pre>
 3. Download dependencies:
    <pre><code>pip install -r requirements.txt</code></pre>
-
-<img src="TestGUI/used files/example.gif" alt="Animated example gif" height="360px" width="375px">
+   
+<p align="center">
+    <img  src="TestGUI/used files/example.gif" alt="Animated example gif" height="360px" width="375px" >
+</p>
 
 **Usage**
 ---
